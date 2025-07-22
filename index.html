@@ -1,1 +1,279 @@
-<h1>my portflllolio</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Eldritch Soundboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the Eldritch Horror theme */
+        body {
+            font-family: 'Cinzel', serif;
+            background-color: #0a080f;
+            background-image: 
+                radial-gradient(at 90% 10%, hsla(285, 88%, 15%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 10% 90%, hsla(180, 95%, 10%, 0.6) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, hsla(220, 50%, 15%, 0.3) 0px, transparent 50%);
+            color: #c5c5d5;
+            overscroll-behavior: none;
+            overflow-x: hidden; /* Prevents horizontal scrollbars */
+        }
+
+        /* Decorative background images */
+        .eldritch-art {
+            position: fixed;
+            z-index: 0;
+            opacity: 0.15;
+            pointer-events: none; /* Make them non-interactive */
+            filter: grayscale(80%) brightness(0.5);
+        }
+
+        #art-top-left {
+            top: -50px;
+            left: -80px;
+            width: 400px;
+            transform: rotate(-15deg);
+        }
+
+        #art-bottom-right {
+            bottom: -100px;
+            right: -120px;
+            width: 500px;
+            transform: rotate(15deg);
+        }
+
+        /* Main app container sits above the art */
+        #app {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem 0.75rem;
+            padding: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* FIX: This rule prevents grid items from expanding based on their content (e.g., long titles) */
+        .sound-grid > div {
+            min-width: 0;
+        }
+
+        @media (min-width: 480px) {
+            .sound-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2rem 1rem;
+            }
+        }
+
+        .sound-btn {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease-in-out;
+            background: #1a1625;
+            border: 2px solid #3a324f;
+            box-shadow: inset 0 0 10px #000, 0 2px 5px #000;
+        }
+        
+        .sound-btn svg {
+            width: 60%;
+            height: 60%;
+            stroke: #8a7f9d;
+            stroke-width: 1.5;
+            fill: none;
+            transition: all 0.2s ease-in-out;
+            pointer-events: none; /* Prevents SVG from intercepting click */
+        }
+
+        .sound-btn:hover {
+            background: #2a243a;
+            border-color: #7a6d91;
+        }
+        .sound-btn:hover svg {
+            stroke: #d9cff0;
+        }
+
+        .sound-btn:active, .sound-btn.playing {
+            transform: scale(0.95);
+            background: #5c2a9d;
+            border-color: #c59fff;
+            box-shadow: inset 0 0 15px #2a0058, 0 0 20px #a855f7;
+        }
+        
+        .sound-btn:active svg, .sound-btn.playing svg {
+            stroke: #fff;
+            filter: drop-shadow(0 0 5px #fff);
+        }
+
+        .sound-title {
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 0.65rem;
+            margin-top: 0.5rem;
+            color: #8a7f9d;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            user-select: none;
+        }
+        
+        #header-logo svg {
+            width: 80px;
+            height: 80px;
+            stroke: #a855f7;
+            stroke-width: 1.5;
+            fill: #a855f733;
+            filter: drop-shadow(0 0 15px #a855f7);
+        }
+        
+        #sound-name-display {
+            font-family: 'Uncial Antiqua', cursive;
+            min-height: 2.5rem;
+            color: #c59fff;
+            text-shadow: 0 0 8px #a855f7;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Decorative Images -->
+    <img id="art-top-left" class="eldritch-art" src="https://images.unsplash.com/photo-1598351049496-b8429e2b83c7?auto=format&fit=crop&w=500" alt="Eldritch decoration">
+    <img id="art-bottom-right" class="eldritch-art" src="https://images.unsplash.com/photo-1605303429193-a68a9c436519?auto=format&fit=crop&w=500" alt="Eldritch decoration">
+
+    <!-- Main Container -->
+    <div id="app" class="min-h-screen flex flex-col justify-center p-2">
+
+        <!-- Header -->
+        <header class="text-center p-4 flex flex-col items-center">
+            <div id="header-logo">
+                <!-- Elder Sign SVG -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2 L19 6 L17 14 L12 22 L7 14 L5 6 Z"></path>
+                    <path d="M12 12 L19 6"></path>
+                    <path d="M12 12 L17 14"></path>
+                    <path d="M12 12 L12 22"></path>
+                    <path d="M12 12 L7 14"></path>
+                    <path d="M12 12 L5 6"></path>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <h1 class="text-3xl md:text-4xl text-purple-300 tracking-wider mt-2">
+                Eldritch Soundboard
+            </h1>
+        </header>
+
+        <!-- Soundboard Grid -->
+        <main id="sound-grid" class="sound-grid">
+            <!-- Buttons and titles will be populated by JS -->
+        </main>
+        
+        <!-- Sound Name Display -->
+        <footer class="text-center p-4">
+            <p class="text-sm text-slate-500">RITUAL FOCUS</p>
+            <p id="sound-name-display" class="text-2xl mt-1">&nbsp;</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const soundGrid = document.getElementById('sound-grid');
+            const soundNameDisplay = document.getElementById('sound-name-display');
+
+            // --- ICON DATA ---
+            const soundIcons = {
+                'Deep Drone': `<svg viewBox="0 0 24 24"><path d="M3 12A9 9 0 0 1 12 3M21 12A9 9 0 0 1 12 21M12 3A9 9 0 0 1 21 12M12 21A9 9 0 0 1 3 12" stroke-dasharray="4 4" stroke-linecap="round"></path></svg>`,
+                'Skittering': `<svg viewBox="0 0 24 24"><path d="M3 12l3-3 3 3-3 3z m5 0l3-3 3 3-3 3z m5 0l3-3 3 3-3 3z"></path></svg>`,
+                'Whispers': `<svg viewBox="0 0 24 24"><path d="M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8c2.135 0 4.1.786 5.6 2.1"></path><path d="M18 9c0 2.21-1.79 4-4 4"></path></svg>`,
+                'Heartbeat': `<svg viewBox="0 0 24 24"><path d="M4 12h2l3 8 4-16 3 8h2"></path></svg>`,
+                'Wet Plop': `<svg viewBox="0 0 24 24"><path d="M12 2c-5.523 0-10 4.477-10 10 0 3.13 1.45 5.94 3.7 7.7l.3.2c3.5 2.5 8.5 2.5 12 0l.3-.2c2.25-1.76 3.7-4.57 3.7-7.7C22 6.477 17.523 2 12 2z"></path><path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path></svg>`,
+                'Dissonant Chord': `<svg viewBox="0 0 24 24"><path d="M10 3L3 10M14 3L21 10M10 21L3 14M14 21L21 14"></path></svg>`,
+                'Ancient Bell': `<svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z"></path><path d="M8 15h8"></path><path d="M12 15v2"></path></svg>`,
+                'Grinding Stone': `<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 2a10 10 0 0 1-10 10"></path></svg>`,
+                'Psychic Scream': `<svg viewBox="0 0 24 24"><path d="M3 8c3-3 6-3 9 0s6 3 9 0m-18 8c3-3 6-3 9 0s6 3 9 0m-18-4c3-3 6-3 9 0s6 3 9 0"></path></svg>`,
+                'Chant': `<svg viewBox="0 0 24 24"><path d="M12 6v12m-4-8h8m-8 4h8m-8-8h8"></path></svg>`,
+                'Monster Growl': `<svg viewBox="0 0 24 24"><path d="M5 6L12 13L19 6" stroke-width="2"></path><path d="M5 12L12 19L19 12" stroke-width="2"></path></svg>`,
+                'Tearing Fabric': `<svg viewBox="0 0 24 24"><path d="M4 4l16 16m0-16L4 20"></path><path d="M12 4v16"></path></svg>`,
+                'Void Howl': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>`,
+                'Clock Toll': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>`,
+                'Ghostly Moan': `<svg viewBox="0 0 24 24"><path d="M5 12q4-4 8 0t8 0" stroke-linecap="round"></path><path d="M5 16q4 4 8 0t8 0" stroke-linecap="round"></path></svg>`,
+                'Bubbling': `<svg viewBox="0 0 24 24"><circle cx="8" cy="16" r="2"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="16" cy="16" r="2"></circle><circle cx="10" cy="8" r="1"></circle><circle cx="14" cy="8" r="1"></circle></svg>`,
+                'Gate Opening': `<svg viewBox="0 0 24 24"><path d="M3 12h18M3 12l5-5m-5 5l5 5m13-5l-5-5m5 5l-5 5"></path></svg>`,
+                'Ritual Drum': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M8 12h8"></path></svg>`,
+                'Sanity Loss': `<svg viewBox="0 0 24 24"><path d="M12 4l2 4l4 2l-4 2l-2 4l-2-4l-4-2l4-2z"></path><path d="M12 14c-3.33 1.33-6.67 1.33-10 0m20 0c-3.33 1.33-6.67 1.33-10 0"></path></svg>`,
+                'Claw Scratch': `<svg viewBox="0 0 24 24"><path d="M5 3c4 4 4 10 0 18m4-17c4 4 4 10 0 18m4-17c4 4 4 10 0 18"></path></svg>`,
+                'Evil Laugh': `<svg viewBox="0 0 24 24"><path d="M8 14s1.5-2 4-2 4 2 4 2"></path><path d="M9 9h.01M15 9h.01"></path><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0z"></path></svg>`,
+                'Tome Page': `<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20v2H6.5A2.5 2.5 0 0 1 4 19.5z"></path><path d="M4 5.5A2.5 2.5 0 0 0 6.5 3H20v2H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M12 3v16"></path></svg>`,
+                'Footsteps': `<svg viewBox="0 0 24 24"><path d="M6 18a3 3 0 0 1-3-3v-6a3 3 0 0 1 6 0v6a3 3 0 0 1-3 3z"></path><path d="M15 12a3 3 0 0 1-3-3V3a3 3 0 0 1 6 0v6a3 3 0 0 1-3 3z"></path></svg>`,
+                'Final Doom': `<svg viewBox="0 0 24 24"><path d="M12 2l-2 7h4l-2-7zm0 20l-2-7h4l-2 7zm10-10l-7 2v-4l7 2zM2 12l7 2v-4l-7 2z"></path></svg>`,
+            };
+            
+            // This object maps the sound names to the actual file paths.
+            const soundFiles = {
+                'Deep Drone': 'sounds/deep_drone.mp3', 'Skittering': 'sounds/skittering.wav', 'Whispers': 'sounds/whispers.mp3', 'Heartbeat': 'sounds/heartbeat.mp3', 'Wet Plop': 'sounds/wet_plop.wav', 'Dissonant Chord': 'sounds/dissonant_chord.mp3', 'Ancient Bell': 'sounds/ancient_bell.wav', 'Grinding Stone': 'sounds/grinding_stone.mp3', 'Psychic Scream': 'sounds/psychic_scream.wav', 'Chant': 'sounds/chant.mp3', 'Monster Growl': 'sounds/monster_growl.wav', 'Tearing Fabric': 'sounds/tearing_fabric.mp3', 'Void Howl': 'sounds/void_howl.wav', 'Clock Toll': 'sounds/clock_toll.mp3', 'Ghostly Moan': 'sounds/ghostly_moan.wav', 'Bubbling': 'sounds/bubbling.mp3', 'Gate Opening': 'sounds/gate_opening.wav', 'Ritual Drum': 'sounds/ritual_drum.mp3', 'Sanity Loss': 'sounds/sanity_loss.wav', 'Claw Scratch': 'sounds/claw_scratch.mp3', 'Evil Laugh': 'sounds/evil_laugh.wav', 'Tome Page': 'sounds/tome_page.mp3', 'Footsteps': 'sounds/footsteps.wav', 'Final Doom': 'sounds/final_doom.mp3'
+            };
+            
+            // Create items (button + title) and add them to the grid
+            Object.keys(soundIcons).forEach(name => {
+                const itemContainer = document.createElement('div');
+                itemContainer.className = 'flex flex-col items-center justify-start';
+
+                const button = document.createElement('button');
+                button.className = 'sound-btn';
+                button.innerHTML = soundIcons[name];
+                button.dataset.soundName = name;
+                
+                const title = document.createElement('p');
+                title.className = 'sound-title';
+                title.textContent = name;
+
+                itemContainer.appendChild(button);
+                itemContainer.appendChild(title);
+                soundGrid.appendChild(itemContainer);
+            });
+
+            // Event listener for all buttons
+            soundGrid.addEventListener('click', (e) => {
+                const button = e.target.closest('.sound-btn');
+                if (!button) return;
+
+                const soundName = button.dataset.soundName;
+                const filePath = soundFiles[soundName];
+                
+                soundNameDisplay.textContent = soundName.toUpperCase();
+
+                console.log(`Button pressed: ${soundName}. File path: ${filePath}`);
+                
+                // --- UNCOMMENT THIS CODE TO PLAY SOUNDS ---
+                /*
+                if (filePath) {
+                    const audio = new Audio(filePath);
+                    audio.play().catch(error => console.error("Error playing sound:", error));
+                }
+                */
+
+                // Visual feedback
+                button.classList.add('playing');
+                setTimeout(() => {
+                    button.classList.remove('playing');
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
