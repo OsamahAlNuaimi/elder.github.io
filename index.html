@@ -12,7 +12,7 @@
         /* --- CORE STYLES --- */
         body {
             font-family: 'Cinzel', serif;
-            background-color: #05040a;
+            background-color: #05040a; /* Deep space color */
             color: #c5c5d5;
             overscroll-behavior: none;
             overflow: hidden; /* Prevents scrollbars */
@@ -30,48 +30,39 @@
             overflow: hidden;
         }
         
-        /* 1. The Breathing Void */
-        .breathing-void {
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(circle at center, #2a0a4a 0%, #1a062d 30%, #05040a 70%);
-            animation: driftAndPulse 40s ease-in-out infinite;
-        }
-
-        @keyframes driftAndPulse {
-            0%   { background-position: 20% 80%; background-size: 150% 150%; opacity: 0.7; }
-            25%  { background-position: 80% 20%; background-size: 160% 160%; opacity: 1; }
-            50%  { background-position: 50% 50%; background-size: 150% 150%; opacity: 0.8; }
-            75%  { background-position: 20% 20%; background-size: 170% 170%; opacity: 1; }
-            100% { background-position: 20% 80%; background-size: 150% 150%; opacity: 0.7; }
-        }
-
-        /* 2. Focusing Vignette */
+        /* 1. Focusing Vignette */
         .vignette {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2; /* Sits above void and orbs */
+            z-index: 2; /* Sits above stars */
             box-shadow: inset 0 0 20vw 10vw #000000;
         }
 
-        /* 3. Gazing Orbs (Replaces Eyes) */
-        #orbs-container {
+        /* 2. Glistening Stars (New Background) */
+        #stars-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
 
-        .gazing-orb {
+        .star {
             position: absolute;
             border-radius: 50%;
-            background-color: #c59fff;
-            box-shadow: 0 0 15px 5px #a855f7, 0 0 30px 10px #5c2a9d;
-            animation: pulseAndFade 12s ease-in-out infinite;
+            background-color: #f0e8ff; /* Bright core for the star */
+            animation: fadeInStayOut 10s ease-in-out infinite;
         }
 
-        @keyframes pulseAndFade {
-            0%, 100% { transform: scale(0.8); opacity: 0; }
-            50%      { transform: scale(1); opacity: 0.6; }
+        @keyframes fadeInStayOut {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+                box-shadow: 0 0 4px 2px #f0e8ff, 0 0 8px 4px #a855f7, 0 0 12px 6px #5c2a9d;
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 8px 4px #f0e8ff, 0 0 16px 8px #a855f7, 0 0 24px 12px #5c2a9d;
+            }
         }
 
         /* --- UI OVERHAUL: INTERACTIVE ELEMENTS --- */
@@ -150,7 +141,7 @@
             filter: drop-shadow(0 0 5px #fff);
         }
 
-        /* 4. Runic Activation */
+        /* Runic Activation */
         .runic-effect {
             position: absolute;
             width: 100%; height: 100%;
@@ -192,7 +183,7 @@
             filter: drop-shadow(0 0 10px #a855f7);
         }
         
-        /* 5. Whispers from the Void */
+        /* Whispers from the Void */
         #sound-name-display {
             font-family: 'Uncial Antiqua', cursive;
             min-height: 1.75rem;
@@ -216,23 +207,28 @@
 </head>
 <body class="antialiased">
 
+    <!-- Overhauled Background Effects -->
     <div id="background-effects">
-        <div class="breathing-void"></div>
-        <div id="orbs-container"></div>
+        <div id="stars-container"></div>
         <div class="vignette"></div>
     </div>
 
+    <!-- Main Container -->
     <div id="app">
 
+        <!-- Header -->
         <header class="text-center p-2 flex flex-col items-center">
             <div id="header-logo">
-                <img src="https://cf.geekdo-images.com/ULWhkzPnFQWbTEgatQkBJQ__opengraph/img/m5Tuj3fp99oDoN178v0krVmH3iM=/fit-in/1200x630/filters:strip_icc()/pic2500312.png" alt="Eldritch Horror Logo">
+                <img src="https://cf.geekdo-images.com/ULWhkzPnFQWbTEgatQkBJQ__opengraph/img/m5Tuj3fp99oDoN178v0krVmH3iM=/fit-in/1200x630/filters:strip_icc()/pic2500312.png" alt="Eldritch Horror Logo" onerror="this.style.display='none'">
             </div>
         </header>
 
+        <!-- Soundboard Grid -->
         <main id="sound-grid" class="sound-grid">
-            </main>
+            <!-- Buttons and titles will be populated by JS -->
+        </main>
         
+        <!-- Sound Name Display -->
         <footer class="text-center p-1">
             <p class="text-xs text-slate-500">RITUAL FOCUS</p>
             <p id="sound-name-display">&nbsp;</p>
@@ -354,47 +350,36 @@
                 }
             });
 
-            // --- GAZING ORBS LOGIC ---
-            const orbsContainer = document.getElementById('orbs-container');
+            // --- GLISTENING STARS LOGIC ---
+            const starsContainer = document.getElementById('stars-container');
 
-            function createOrb() {
-                const orb = document.createElement('div');
-                orb.className = 'gazing-orb';
+            function createStar() {
+                const star = document.createElement('div');
+                star.className = 'star';
 
-                const size = Math.random() * 20 + 5; // 5px to 25px
-                orb.style.width = `${size}px`;
-                orb.style.height = `${size}px`;
+                const size = Math.random() * 3 + 1; // 1px to 4px
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
 
-                // Random position (avoiding screen center)
-                const side = Math.floor(Math.random() * 4);
-                let top, left;
-                if (side === 0) { // Top
-                    top = Math.random() * 15; left = Math.random() * 90;
-                } else if (side === 1) { // Bottom
-                    top = Math.random() * 15 + 85; left = Math.random() * 90;
-                } else if (side === 2) { // Left
-                    top = Math.random() * 80 + 10; left = Math.random() * 15;
-                } else { // Right
-                    top = Math.random() * 80 + 10; left = Math.random() * 15 + 85;
-                }
-                orb.style.top = `${top}%`;
-                orb.style.left = `${left}%`;
+                // Random position across the entire viewport
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
 
                 // Randomize animation delays and durations for variety
-                const randomDuration = Math.random() * 8 + 8; // 8-16s
-                orb.style.animationDuration = `${randomDuration}s`;
-                orb.style.animationDelay = `${Math.random() * randomDuration}s`;
+                const randomDuration = Math.random() * 5 + 7; // 7-12s
+                star.style.animationDuration = `${randomDuration}s`;
+                star.style.animationDelay = `${Math.random() * randomDuration}s`;
 
-                orbsContainer.appendChild(orb);
+                starsContainer.appendChild(star);
 
-                // Remove the orb from the DOM after it has faded out to prevent clutter
+                // Remove the star from the DOM after its animation is complete to prevent clutter
                 setTimeout(() => {
-                    orb.remove();
+                    star.remove();
                 }, randomDuration * 1000);
             }
 
-            // Spawn a new orb periodically
-            setInterval(createOrb, 1500);
+            // Spawn a new star periodically to create a dense, dynamic field
+            setInterval(createStar, 150);
         });
     </script>
 </body>
