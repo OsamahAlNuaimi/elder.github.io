@@ -18,7 +18,73 @@
             overflow: hidden; /* Prevents scrollbars */
         }
 
-        /* --- UI OVERHAUL: BACKGROUND EFFECTS --- */
+        /* --- LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #05040a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease-in-out;
+            pointer-events: all;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading-screen img {
+            width: 250px;
+            max-width: 80%;
+            height: auto;
+            animation: materialize 1.5s ease-out forwards; /* Changed duration */
+        }
+        
+        #loading-screen p {
+            font-family: 'Uncial Antiqua', cursive;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: #8a7f9d;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 8px #a855f7;
+            animation: pulseText 2s ease-in-out infinite;
+        }
+
+        @keyframes materialize {
+            0% {
+                opacity: 0;
+                filter: blur(15px) drop-shadow(0 0 5px #a855f7);
+            }
+            50% {
+                opacity: 0.8;
+                filter: blur(3px) drop-shadow(0 0 20px #a855f7);
+            }
+            100% {
+                opacity: 1;
+                filter: blur(0) drop-shadow(0 0 10px #a855f7);
+            }
+        }
+
+        @keyframes pulseText {
+            0%, 100% {
+                color: #8a7f9d;
+                text-shadow: 0 0 8px #a855f7;
+            }
+            50% {
+                color: #d9cff0;
+                text-shadow: 0 0 16px #c59fff;
+            }
+        }
+
+
+        /* --- BACKGROUND EFFECTS --- */
         #background-effects {
             position: fixed;
             top: 0;
@@ -30,7 +96,6 @@
             overflow: hidden;
         }
         
-        /* 1. Focusing Vignette */
         .vignette {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -38,7 +103,6 @@
             box-shadow: inset 0 0 20vw 10vw #000000;
         }
 
-        /* 2. Glistening Stars (New Background) */
         #stars-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -48,7 +112,7 @@
         .star {
             position: absolute;
             border-radius: 50%;
-            background-color: #f0e8ff; /* Bright core for the star */
+            background-color: #f0e8ff;
             animation: fadeInStayOut 10s ease-in-out infinite;
         }
 
@@ -65,12 +129,10 @@
             }
         }
 
-        /* --- UI OVERHAUL: INTERACTIVE ELEMENTS --- */
-
-        /* Main app container sits above the background effects */
+        /* --- INTERACTIVE ELEMENTS --- */
         #app {
             position: relative;
-            z-index: 10; /* Above all background effects */
+            z-index: 10;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -93,8 +155,8 @@
         }
 
         .sound-btn {
-            position: relative; /* Needed for runic effect */
-            overflow: hidden;   /* Needed for runic effect */
+            position: relative;
+            overflow: hidden;
             aspect-ratio: 1 / 1;
             width: 100%;
             display: flex;
@@ -118,7 +180,7 @@
             fill: none;
             transition: all 0.2s ease-in-out;
             pointer-events: none;
-            z-index: 2; /* Icon above runic effect */
+            z-index: 2;
         }
 
         .sound-btn:hover {
@@ -130,7 +192,7 @@
         }
 
         .sound-btn:active, .sound-btn.playing {
-            transform: scale(0.97); /* Slightly less aggressive scale */
+            transform: scale(0.97);
             background: #5c2a9d;
             border-color: #c59fff;
             box-shadow: inset 0 0 12px #2a0058, 0 0 15px #a855f7;
@@ -141,7 +203,6 @@
             filter: drop-shadow(0 0 5px #fff);
         }
 
-        /* Runic Activation */
         .runic-effect {
             position: absolute;
             width: 100%; height: 100%;
@@ -151,7 +212,7 @@
             transform: scale(0);
             opacity: 0;
             pointer-events: none;
-            z-index: 1; /* Below the icon */
+            z-index: 1;
         }
         .runic-effect.activate {
             animation: runicActivation 0.5s ease-out forwards;
@@ -183,14 +244,13 @@
             filter: drop-shadow(0 0 10px #a855f7);
         }
         
-        /* Whispers from the Void */
         #sound-name-display {
             font-family: 'Uncial Antiqua', cursive;
             min-height: 1.75rem;
             font-size: 1.1rem;
             color: #c59fff;
             text-shadow: 0 0 8px #a855f7;
-            opacity: 0; /* Start hidden */
+            opacity: 0;
         }
 
         #sound-name-display.whispering {
@@ -207,7 +267,13 @@
 </head>
 <body class="antialiased">
 
-    <!-- Overhauled Background Effects -->
+    <!-- Fake Loading Screen -->
+    <div id="loading-screen">
+        <img src="https://cf.geekdo-images.com/ULWhkzPnFQWbTEgatQkBJQ__opengraph/img/m5Tuj3fp99oDoN178v0krVmH3iM=/fit-in/1200x630/filters:strip_icc()/pic2500312.png" alt="Eldritch Horror Logo" onerror="this.style.display='none'">
+        <p>AWAKENING THE ABYSS...</p>
+    </div>
+
+    <!-- Background Effects -->
     <div id="background-effects">
         <div id="stars-container"></div>
         <div class="vignette"></div>
@@ -238,8 +304,20 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const loadingScreen = document.getElementById('loading-screen');
             const soundGrid = document.getElementById('sound-grid');
             const soundNameDisplay = document.getElementById('sound-name-display');
+
+            // --- LOADING SCREEN LOGIC ---
+            // Simulate the awakening process
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                // Set display to none after the transition to prevent it from blocking interactions
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 1000); // Should match the transition duration
+            }, 1500); // Changed: Keep the loading screen for 1.5 seconds
+
 
             // --- GLOBAL AUDIO STATE ---
             let currentAudio = null;
@@ -279,7 +357,6 @@
                 button.dataset.soundFile = sound.file;
                 button.dataset.soundTitle = sound.title;
                 
-                // Add icon SVG and new runic effect span
                 button.innerHTML = sound.icon + `<span class="runic-effect"></span>`;
                 
                 const title = document.createElement('p');
@@ -293,28 +370,24 @@
 
             // --- AUDIO PLAYBACK LOGIC ---
             function playSound(button) {
-                stopSound(); // Stop any currently playing sound first
+                stopSound(); 
 
-                // Play audio
                 const filePath = button.dataset.soundFile;
                 currentAudio = new Audio(filePath);
                 currentAudio.play().catch(error => console.error("Error playing sound:", error));
                 
-                // Update state
                 currentPlayingButton = button;
                 button.classList.add('playing');
                 currentAudio.addEventListener('ended', stopSound);
 
-                // Trigger "Runic Activation" animation
                 const runicEffect = button.querySelector('.runic-effect');
                 runicEffect.classList.add('activate');
                 runicEffect.addEventListener('animationend', () => {
                     runicEffect.classList.remove('activate');
                 }, { once: true });
                 
-                // Trigger "Whispers from the Void" animation
                 soundNameDisplay.classList.remove('whispering');
-                void soundNameDisplay.offsetWidth; // Force browser reflow to re-trigger animation
+                void soundNameDisplay.offsetWidth;
                 soundNameDisplay.textContent = button.dataset.soundTitle.toUpperCase();
                 soundNameDisplay.classList.add('whispering');
             }
@@ -329,14 +402,12 @@
                     currentPlayingButton.classList.remove('playing');
                     currentPlayingButton = null;
                 }
-                // Fade out the text by removing the animation class
                 soundNameDisplay.classList.remove('whispering');
-                // Use a timeout to clear the text after it fades
                 setTimeout(() => {
-                    if (!currentPlayingButton) { // Ensure a new sound hasn't started
+                    if (!currentPlayingButton) {
                         soundNameDisplay.innerHTML = '&nbsp;';
                     }
-                }, 800); // Matches animation duration
+                }, 800);
             }
 
             soundGrid.addEventListener('click', (e) => {
@@ -357,28 +428,24 @@
                 const star = document.createElement('div');
                 star.className = 'star';
 
-                const size = Math.random() * 3 + 1; // 1px to 4px
+                const size = Math.random() * 3 + 1;
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
 
-                // Random position across the entire viewport
                 star.style.top = `${Math.random() * 100}%`;
                 star.style.left = `${Math.random() * 100}%`;
 
-                // Randomize animation delays and durations for variety
-                const randomDuration = Math.random() * 5 + 7; // 7-12s
+                const randomDuration = Math.random() * 5 + 7;
                 star.style.animationDuration = `${randomDuration}s`;
                 star.style.animationDelay = `${Math.random() * randomDuration}s`;
 
                 starsContainer.appendChild(star);
 
-                // Remove the star from the DOM after its animation is complete to prevent clutter
                 setTimeout(() => {
                     star.remove();
                 }, randomDuration * 1000);
             }
 
-            // Spawn a new star periodically to create a dense, dynamic field
             setInterval(createStar, 150);
         });
     </script>
