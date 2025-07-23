@@ -9,17 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the Eldritch Horror theme */
+        /* --- CORE STYLES --- */
         body {
             font-family: 'Cinzel', serif;
-            background-color: #05040a; /* Darker background */
+            background-color: #05040a;
             color: #c5c5d5;
             overscroll-behavior: none;
-            overflow: hidden; /* Prevents scrollbars from eyes */
+            overflow: hidden; /* Prevents scrollbars */
         }
 
-        /* --- Blinking Eyes Background --- */
-        #eyes-container {
+        /* --- UI OVERHAUL: BACKGROUND EFFECTS --- */
+        #background-effects {
             position: fixed;
             top: 0;
             left: 0;
@@ -29,42 +29,57 @@
             pointer-events: none;
             overflow: hidden;
         }
+        
+        /* 1. The Breathing Void */
+        .breathing-void {
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at center, #2a0a4a 0%, #1a062d 30%, #05040a 70%);
+            animation: driftAndPulse 40s ease-in-out infinite;
+        }
 
-        .peeking-eye {
+        @keyframes driftAndPulse {
+            0%   { background-position: 20% 80%; background-size: 150% 150%; opacity: 0.7; }
+            25%  { background-position: 80% 20%; background-size: 160% 160%; opacity: 1; }
+            50%  { background-position: 50% 50%; background-size: 150% 150%; opacity: 0.8; }
+            75%  { background-position: 20% 20%; background-size: 170% 170%; opacity: 1; }
+            100% { background-position: 20% 80%; background-size: 150% 150%; opacity: 0.7; }
+        }
+
+        /* 2. Focusing Vignette */
+        .vignette {
             position: absolute;
-            opacity: 0;
-            animation: fadeInOut 10s ease-in-out infinite;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; /* Sits above void and orbs */
+            box-shadow: inset 0 0 20vw 10vw #000000;
         }
 
-        .peeking-eye svg {
-            width: 60px; /* Made eyes smaller */
-            height: auto;
-            filter: drop-shadow(0 0 10px #a855f7a0); /* Color back to purple */
+        /* 3. Gazing Orbs (Replaces Eyes) */
+        #orbs-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
         }
 
-        .eye-lid {
-            transform-origin: center center;
-            animation: slowBlink 6s ease-in-out infinite;
+        .gazing-orb {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #c59fff;
+            box-shadow: 0 0 15px 5px #a855f7, 0 0 30px 10px #5c2a9d;
+            animation: pulseAndFade 12s ease-in-out infinite;
         }
 
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            20%, 80% { opacity: 0.7; }
+        @keyframes pulseAndFade {
+            0%, 100% { transform: scale(0.8); opacity: 0; }
+            50%      { transform: scale(1); opacity: 0.6; }
         }
 
-        @keyframes slowBlink {
-            0%, 40%, 100% {
-                transform: scaleY(0); /* Eyelid is open */
-            }
-            50% {
-                transform: scaleY(1.1); /* Eyelid is closed (slight overshoot) */
-            }
-        }
+        /* --- UI OVERHAUL: INTERACTIVE ELEMENTS --- */
 
-        /* Main app container sits above the art */
+        /* Main app container sits above the background effects */
         #app {
             position: relative;
-            z-index: 1;
+            z-index: 10; /* Above all background effects */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -74,7 +89,7 @@
 
         .sound-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columns for mobile */
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.75rem 0.375rem;
             padding: 0.25rem;
             max-width: 480px;
@@ -87,16 +102,18 @@
         }
 
         .sound-btn {
+            position: relative; /* Needed for runic effect */
+            overflow: hidden;   /* Needed for runic effect */
             aspect-ratio: 1 / 1;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0.375rem; 
+            border-radius: 0.375rem;
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease-in-out;
-            background: #1a1625e0; /* Slightly transparent */
+            background: #1a1625e0;
             border: 1px solid #3a324f;
             box-shadow: inset 0 0 8px #000, 0 1px 4px #000;
             backdrop-filter: blur(2px);
@@ -109,7 +126,8 @@
             stroke-width: 1.5;
             fill: none;
             transition: all 0.2s ease-in-out;
-            pointer-events: none; /* Prevents SVG from intercepting click */
+            pointer-events: none;
+            z-index: 2; /* Icon above runic effect */
         }
 
         .sound-btn:hover {
@@ -121,7 +139,7 @@
         }
 
         .sound-btn:active, .sound-btn.playing {
-            transform: scale(0.95);
+            transform: scale(0.97); /* Slightly less aggressive scale */
             background: #5c2a9d;
             border-color: #c59fff;
             box-shadow: inset 0 0 12px #2a0058, 0 0 15px #a855f7;
@@ -132,10 +150,31 @@
             filter: drop-shadow(0 0 5px #fff);
         }
 
+        /* 4. Runic Activation */
+        .runic-effect {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            border-radius: 50%;
+            border: 2px solid #c59fff;
+            transform: scale(0);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1; /* Below the icon */
+        }
+        .runic-effect.activate {
+            animation: runicActivation 0.5s ease-out forwards;
+        }
+
+        @keyframes runicActivation {
+            from { transform: scale(0.2); opacity: 0.8; }
+            to   { transform: scale(2); opacity: 0; }
+        }
+
         .sound-title {
             font-family: 'Uncial Antiqua', cursive;
             font-size: 0.45rem;
-            margin-top: 0.25rem; 
+            margin-top: 0.25rem;
             color: #8a7f9d;
             text-align: center;
             text-transform: uppercase;
@@ -148,44 +187,55 @@
         }
         
         #header-logo img {
-            width: 150px; /* Maximized logo size */
+            width: 150px;
             height: auto;
             filter: drop-shadow(0 0 10px #a855f7);
         }
         
+        /* 5. Whispers from the Void */
         #sound-name-display {
             font-family: 'Uncial Antiqua', cursive;
             min-height: 1.75rem;
             font-size: 1.1rem;
             color: #c59fff;
             text-shadow: 0 0 8px #a855f7;
+            opacity: 0; /* Start hidden */
         }
+
+        #sound-name-display.whispering {
+            animation: whisper 0.8s ease-in-out forwards;
+        }
+        
+        @keyframes whisper {
+            0%   { opacity: 0; transform: scale(0.95); text-shadow: 0 0 4px #a855f7; }
+            50%  { opacity: 1; text-shadow: 0 0 12px #c59fff, 0 0 20px #a855f7; }
+            100% { opacity: 1; transform: scale(1); text-shadow: 0 0 8px #a855f7; }
+        }
+
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Blinking Eyes Background -->
-    <div id="eyes-container"></div>
+    <div id="background-effects">
+        <div class="breathing-void"></div>
+        <div id="orbs-container"></div>
+        <div class="vignette"></div>
+    </div>
 
-    <!-- Main Container -->
     <div id="app">
 
-        <!-- Header -->
         <header class="text-center p-2 flex flex-col items-center">
             <div id="header-logo">
                 <img src="https://cf.geekdo-images.com/ULWhkzPnFQWbTEgatQkBJQ__opengraph/img/m5Tuj3fp99oDoN178v0krVmH3iM=/fit-in/1200x630/filters:strip_icc()/pic2500312.png" alt="Eldritch Horror Logo">
             </div>
         </header>
 
-        <!-- Soundboard Grid -->
         <main id="sound-grid" class="sound-grid">
-            <!-- Buttons and titles will be populated by JS -->
-        </main>
+            </main>
         
-        <!-- Sound Name Display -->
         <footer class="text-center p-1">
             <p class="text-xs text-slate-500">RITUAL FOCUS</p>
-            <p id="sound-name-display" class="mt-1">&nbsp;</p>
+            <p id="sound-name-display">&nbsp;</p>
         </footer>
 
     </div>
@@ -199,7 +249,7 @@
             let currentAudio = null;
             let currentPlayingButton = null;
 
-            // --- SOUND DATA ---
+            // --- SOUND DATA (Unchanged) ---
             const sounds = [
                 { title: 'Dark Deal', file: '1. Dark Transaction.mp3', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="6"></circle><path d="M15 6l-3-4-3 4h6z"></path><path d="M9 6l3 4 3-4"></path></svg>` },
                 { title: 'Roaring Fire', file: '2. Roaring Fire.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 22V10m0-4V2m-4 8H4l4-4m8 4h4l-4-4"></path></svg>` },
@@ -223,16 +273,18 @@
                 { title: 'Ancient Bell', file: '20. Ancient Bell.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z"></path><path d="M8 15h8"></path><path d="M12 15v2"></path></svg>` },
             ];
             
-            // Create items (button + title) and add them to the grid
+            // Create items and add them to the grid
             sounds.forEach(sound => {
                 const itemContainer = document.createElement('div');
                 itemContainer.className = 'flex flex-col items-center justify-start';
 
                 const button = document.createElement('button');
                 button.className = 'sound-btn';
-                button.innerHTML = sound.icon;
                 button.dataset.soundFile = sound.file;
                 button.dataset.soundTitle = sound.title;
+                
+                // Add icon SVG and new runic effect span
+                button.innerHTML = sound.icon + `<span class="runic-effect"></span>`;
                 
                 const title = document.createElement('p');
                 title.className = 'sound-title';
@@ -245,14 +297,30 @@
 
             // --- AUDIO PLAYBACK LOGIC ---
             function playSound(button) {
+                stopSound(); // Stop any currently playing sound first
+
+                // Play audio
                 const filePath = button.dataset.soundFile;
-                stopSound();
                 currentAudio = new Audio(filePath);
                 currentAudio.play().catch(error => console.error("Error playing sound:", error));
+                
+                // Update state
                 currentPlayingButton = button;
                 button.classList.add('playing');
-                soundNameDisplay.textContent = button.dataset.soundTitle.toUpperCase();
                 currentAudio.addEventListener('ended', stopSound);
+
+                // Trigger "Runic Activation" animation
+                const runicEffect = button.querySelector('.runic-effect');
+                runicEffect.classList.add('activate');
+                runicEffect.addEventListener('animationend', () => {
+                    runicEffect.classList.remove('activate');
+                }, { once: true });
+                
+                // Trigger "Whispers from the Void" animation
+                soundNameDisplay.classList.remove('whispering');
+                void soundNameDisplay.offsetWidth; // Force browser reflow to re-trigger animation
+                soundNameDisplay.textContent = button.dataset.soundTitle.toUpperCase();
+                soundNameDisplay.classList.add('whispering');
             }
 
             function stopSound() {
@@ -265,12 +333,20 @@
                     currentPlayingButton.classList.remove('playing');
                     currentPlayingButton = null;
                 }
-                soundNameDisplay.textContent = '\u00A0'; // Non-breaking space
+                // Fade out the text by removing the animation class
+                soundNameDisplay.classList.remove('whispering');
+                // Use a timeout to clear the text after it fades
+                setTimeout(() => {
+                    if (!currentPlayingButton) { // Ensure a new sound hasn't started
+                        soundNameDisplay.innerHTML = '&nbsp;';
+                    }
+                }, 800); // Matches animation duration
             }
 
             soundGrid.addEventListener('click', (e) => {
                 const button = e.target.closest('.sound-btn');
                 if (!button) return;
+                
                 if (button === currentPlayingButton) {
                     stopSound();
                 } else {
@@ -278,42 +354,47 @@
                 }
             });
 
-            // --- BLINKING EYES LOGIC ---
-            const eyesContainer = document.getElementById('eyes-container');
-            const eyeSvg = `
-                <svg viewBox="0 0 100 100">
-                    <path d="M 10 50 C 10 20, 90 20, 90 50 C 90 80, 10 80, 10 50" fill="#1a1625" stroke="#3a324f" stroke-width="2"></path>
-                    <circle cx="50" cy="50" r="15" fill="#c59fff"></circle>
-                    <path class="eye-lid" d="M 10 50 C 10 20, 90 20, 90 50" fill="#05040a"></path>
-                </svg>
-            `;
+            // --- GAZING ORBS LOGIC ---
+            const orbsContainer = document.getElementById('orbs-container');
 
-            function createEye() {
-                const eye = document.createElement('div');
-                eye.className = 'peeking-eye';
-                eye.innerHTML = eyeSvg;
+            function createOrb() {
+                const orb = document.createElement('div');
+                orb.className = 'gazing-orb';
 
-                // Random position (avoiding edges)
-                eye.style.top = `${Math.random() * 80 + 10}%`;
-                eye.style.left = `${Math.random() * 80 + 10}%`;
+                const size = Math.random() * 20 + 5; // 5px to 25px
+                orb.style.width = `${size}px`;
+                orb.style.height = `${size}px`;
+
+                // Random position (avoiding screen center)
+                const side = Math.floor(Math.random() * 4);
+                let top, left;
+                if (side === 0) { // Top
+                    top = Math.random() * 15; left = Math.random() * 90;
+                } else if (side === 1) { // Bottom
+                    top = Math.random() * 15 + 85; left = Math.random() * 90;
+                } else if (side === 2) { // Left
+                    top = Math.random() * 80 + 10; left = Math.random() * 15;
+                } else { // Right
+                    top = Math.random() * 80 + 10; left = Math.random() * 15 + 85;
+                }
+                orb.style.top = `${top}%`;
+                orb.style.left = `${left}%`;
 
                 // Randomize animation delays and durations for variety
-                const randomFadeDuration = Math.random() * 4 + 8; // 8-12s
-                const randomBlinkDuration = Math.random() * 3 + 5; // 5-8s
-                eye.style.animationDuration = `${randomFadeDuration}s`;
-                eye.querySelector('.eye-lid').style.animationDuration = `${randomBlinkDuration}s`;
-                eye.querySelector('.eye-lid').style.animationDelay = `${Math.random() * randomBlinkDuration}s`;
+                const randomDuration = Math.random() * 8 + 8; // 8-16s
+                orb.style.animationDuration = `${randomDuration}s`;
+                orb.style.animationDelay = `${Math.random() * randomDuration}s`;
 
-                eyesContainer.appendChild(eye);
+                orbsContainer.appendChild(orb);
 
-                // Remove the eye from the DOM after it has faded out
+                // Remove the orb from the DOM after it has faded out to prevent clutter
                 setTimeout(() => {
-                    eye.remove();
-                }, randomFadeDuration * 1000);
+                    orb.remove();
+                }, randomDuration * 1000);
             }
 
-            // Spawn a new eye more frequently
-            setInterval(createEye, 800);
+            // Spawn a new orb periodically
+            setInterval(createOrb, 1500);
         });
     </script>
 </body>
