@@ -12,37 +12,48 @@
         /* Custom styles for the Eldritch Horror theme */
         body {
             font-family: 'Cinzel', serif;
-            background-color: #0a080f;
-            background-image: 
-                radial-gradient(at 90% 10%, hsla(285, 88%, 15%, 0.5) 0px, transparent 50%),
-                radial-gradient(at 10% 90%, hsla(180, 95%, 10%, 0.6) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, hsla(220, 50%, 15%, 0.3) 0px, transparent 50%);
+            background-color: #05040a; /* Darker background */
             color: #c5c5d5;
             overscroll-behavior: none;
-            overflow-x: hidden; /* Prevents horizontal scrollbars */
+            overflow: hidden; /* Prevents scrollbars from eyes */
         }
 
-        /* Decorative background images */
-        .eldritch-art {
+        /* --- Blinking Eyes Background --- */
+        #eyes-container {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
-            opacity: 0.1;
-            pointer-events: none; /* Make them non-interactive */
-            filter: grayscale(80%) brightness(0.5);
+            pointer-events: none;
+            overflow: hidden;
         }
 
-        #art-top-left {
-            top: -50px;
-            left: -80px;
-            width: 300px;
-            transform: rotate(-15deg);
+        .peeking-eye {
+            position: absolute;
+            opacity: 0;
+            animation: fadeInOut 8s ease-in-out infinite;
         }
 
-        #art-bottom-right {
-            bottom: -100px;
-            right: -120px;
-            width: 400px;
-            transform: rotate(15deg);
+        .peeking-eye svg {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0 0 10px #a855f7a0);
+        }
+
+        .eye-pupil {
+            animation: blink 5s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            20%, 80% { opacity: 0.7; }
+        }
+
+        @keyframes blink {
+            0%, 45%, 55%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
         }
 
         /* Main app container sits above the art */
@@ -66,7 +77,6 @@
             margin: 0 auto;
         }
 
-        /* This rule prevents grid items from expanding based on their content */
         .sound-grid > div {
             min-width: 0;
         }
@@ -81,9 +91,10 @@
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease-in-out;
-            background: #1a1625;
+            background: #1a1625e0; /* Slightly transparent */
             border: 1px solid #3a324f;
             box-shadow: inset 0 0 8px #000, 0 1px 4px #000;
+            backdrop-filter: blur(2px);
         }
         
         .sound-btn svg {
@@ -148,9 +159,8 @@
 </head>
 <body class="antialiased">
 
-    <!-- Decorative Images -->
-    <img id="art-top-left" class="eldritch-art" src="https://images.unsplash.com/photo-1598351049496-b8429e2b83c7?auto=format&fit=crop&w=500" alt="Eldritch decoration">
-    <img id="art-bottom-right" class="eldritch-art" src="https://images.unsplash.com/photo-1605303429193-a68a9c436519?auto=format&fit=crop&w=500" alt="Eldritch decoration">
+    <!-- Blinking Eyes Background -->
+    <div id="eyes-container"></div>
 
     <!-- Main Container -->
     <div id="app">
@@ -231,18 +241,12 @@
             // --- AUDIO PLAYBACK LOGIC ---
             function playSound(button) {
                 const filePath = button.dataset.soundFile;
-                
-                // Stop any currently playing audio
                 stopSound();
-
-                // Create and play new audio
                 currentAudio = new Audio(filePath);
                 currentAudio.play().catch(error => console.error("Error playing sound:", error));
                 currentPlayingButton = button;
                 button.classList.add('playing');
                 soundNameDisplay.textContent = button.dataset.soundTitle.toUpperCase();
-
-                // Listen for when the audio finishes
                 currentAudio.addEventListener('ended', stopSound);
             }
 
@@ -259,19 +263,51 @@
                 soundNameDisplay.textContent = '\u00A0'; // Non-breaking space
             }
 
-            // Event listener for all buttons
             soundGrid.addEventListener('click', (e) => {
                 const button = e.target.closest('.sound-btn');
                 if (!button) return;
-
-                // If the clicked button is already playing, stop it.
                 if (button === currentPlayingButton) {
                     stopSound();
                 } else {
-                    // Otherwise, play the new sound.
                     playSound(button);
                 }
             });
+
+            // --- BLINKING EYES LOGIC ---
+            const eyesContainer = document.getElementById('eyes-container');
+            const eyeSvg = `
+                <svg viewBox="0 0 100 50">
+                    <path d="M 0 25 C 20 0, 80 0, 100 25 C 80 50, 20 50, 0 25" fill="#1a1625" stroke="#3a324f" stroke-width="2"></path>
+                    <path class="eye-pupil" d="M 50 15 C 40 15, 40 35, 50 35 C 60 35, 60 15, 50 15" fill="#c59fff"></path>
+                </svg>
+            `;
+
+            function createEye() {
+                const eye = document.createElement('div');
+                eye.className = 'peeking-eye';
+                eye.innerHTML = eyeSvg;
+
+                // Random position (avoiding edges)
+                eye.style.top = `${Math.random() * 80 + 10}%`;
+                eye.style.left = `${Math.random() * 80 + 10}%`;
+
+                // Randomize animation delays and durations for variety
+                const randomFadeDuration = Math.random() * 4 + 6; // 6-10s
+                const randomBlinkDuration = Math.random() * 3 + 4; // 4-7s
+                eye.style.animationDuration = `${randomFadeDuration}s`;
+                eye.querySelector('.eye-pupil').style.animationDuration = `${randomBlinkDuration}s`;
+                eye.querySelector('.eye-pupil').style.animationDelay = `${Math.random() * randomBlinkDuration}s`;
+
+                eyesContainer.appendChild(eye);
+
+                // Remove the eye from the DOM after it has faded out
+                setTimeout(() => {
+                    eye.remove();
+                }, randomFadeDuration * 1000);
+            }
+
+            // Spawn a new eye every so often
+            setInterval(createEye, 2000);
         });
     </script>
 </body>
