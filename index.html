@@ -53,15 +53,15 @@
             flex-direction: column;
             justify-content: center;
             min-height: 100vh;
-            padding: 0.25rem; /* Further reduced padding */
+            padding: 0.25rem;
         }
 
         .sound-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr); /* 4 columns for mobile */
-            gap: 0.75rem 0.375rem; /* Further reduced gap */
+            gap: 0.75rem 0.375rem;
             padding: 0.25rem;
-            max-width: 480px; /* Slightly smaller max-width */
+            max-width: 480px;
             width: 100%;
             margin: 0 auto;
         }
@@ -118,7 +118,7 @@
 
         .sound-title {
             font-family: 'Uncial Antiqua', cursive;
-            font-size: 0.45rem; /* Smaller font */
+            font-size: 0.45rem;
             margin-top: 0.25rem; 
             color: #8a7f9d;
             text-align: center;
@@ -131,19 +131,16 @@
             user-select: none;
         }
         
-        #header-logo svg {
-            width: 50px; /* smaller logo */
-            height: 50px;
-            stroke: #a855f7;
-            stroke-width: 1.5;
-            fill: #a855f733;
-            filter: drop-shadow(0 0 15px #a855f7);
+        #header-logo img {
+            width: 150px; /* Maximized logo size */
+            height: auto;
+            filter: drop-shadow(0 0 10px #a855f7);
         }
         
         #sound-name-display {
             font-family: 'Uncial Antiqua', cursive;
             min-height: 1.75rem;
-            font-size: 1.1rem; /* smaller display text */
+            font-size: 1.1rem;
             color: #c59fff;
             text-shadow: 0 0 8px #a855f7;
         }
@@ -159,22 +156,10 @@
     <div id="app">
 
         <!-- Header -->
-        <header class="text-center p-1 flex flex-col items-center">
+        <header class="text-center p-2 flex flex-col items-center">
             <div id="header-logo">
-                <!-- Elder Sign SVG -->
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2 L19 6 L17 14 L12 22 L7 14 L5 6 Z"></path>
-                    <path d="M12 12 L19 6"></path>
-                    <path d="M12 12 L17 14"></path>
-                    <path d="M12 12 L12 22"></path>
-                    <path d="M12 12 L7 14"></path>
-                    <path d="M12 12 L5 6"></path>
-                    <circle cx="12" cy="12" r="2"></circle>
-                </svg>
+                <img src="https://cf.geekdo-images.com/ULWhkzPnFQWbTEgatQkBJQ__opengraph/img/m5Tuj3fp99oDoN178v0krVmH3iM=/fit-in/1200x630/filters:strip_icc()/pic2500312.png" alt="Eldritch Horror Logo">
             </div>
-            <h1 class="text-xl text-purple-300 tracking-wider mt-1">
-                Eldritch Soundboard
-            </h1>
         </header>
 
         <!-- Soundboard Grid -->
@@ -195,79 +180,97 @@
             const soundGrid = document.getElementById('sound-grid');
             const soundNameDisplay = document.getElementById('sound-name-display');
 
-            // --- ICON DATA (20 items for a 4x5 grid) ---
-            const soundIcons = {
-                'Deep Drone': `<svg viewBox="0 0 24 24"><path d="M3 12A9 9 0 0 1 12 3M21 12A9 9 0 0 1 12 21M12 3A9 9 0 0 1 21 12M12 21A9 9 0 0 1 3 12" stroke-dasharray="4 4" stroke-linecap="round"></path></svg>`,
-                'Skittering': `<svg viewBox="0 0 24 24"><path d="M3 12l3-3 3 3-3 3z m5 0l3-3 3 3-3 3z m5 0l3-3 3 3-3 3z"></path></svg>`,
-                'Whispers': `<svg viewBox="0 0 24 24"><path d="M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8c2.135 0 4.1.786 5.6 2.1"></path><path d="M18 9c0 2.21-1.79 4-4 4"></path></svg>`,
-                'Heartbeat': `<svg viewBox="0 0 24 24"><path d="M4 12h2l3 8 4-16 3 8h2"></path></svg>`,
-                'Wet Plop': `<svg viewBox="0 0 24 24"><path d="M12 2c-5.523 0-10 4.477-10 10 0 3.13 1.45 5.94 3.7 7.7l.3.2c3.5 2.5 8.5 2.5 12 0l.3-.2c2.25-1.76 3.7-4.57 3.7-7.7C22 6.477 17.523 2 12 2z"></path><path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path></svg>`,
-                'Dissonant Chord': `<svg viewBox="0 0 24 24"><path d="M10 3L3 10M14 3L21 10M10 21L3 14M14 21L21 14"></path></svg>`,
-                'Ancient Bell': `<svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z"></path><path d="M8 15h8"></path><path d="M12 15v2"></path></svg>`,
-                'Grinding Stone': `<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 2a10 10 0 0 1-10 10"></path></svg>`,
-                'Psychic Scream': `<svg viewBox="0 0 24 24"><path d="M3 8c3-3 6-3 9 0s6 3 9 0m-18 8c3-3 6-3 9 0s6 3 9 0m-18-4c3-3 6-3 9 0s6 3 9 0"></path></svg>`,
-                'Chant': `<svg viewBox="0 0 24 24"><path d="M12 6v12m-4-8h8m-8 4h8m-8-8h8"></path></svg>`,
-                'Monster Growl': `<svg viewBox="0 0 24 24"><path d="M5 6L12 13L19 6" stroke-width="2"></path><path d="M5 12L12 19L19 12" stroke-width="2"></path></svg>`,
-                'Tearing Fabric': `<svg viewBox="0 0 24 24"><path d="M4 4l16 16m0-16L4 20"></path><path d="M12 4v16"></path></svg>`,
-                'Void Howl': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>`,
-                'Clock Toll': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>`,
-                'Ghostly Moan': `<svg viewBox="0 0 24 24"><path d="M5 12q4-4 8 0t8 0" stroke-linecap="round"></path><path d="M5 16q4 4 8 0t8 0" stroke-linecap="round"></path></svg>`,
-                'Bubbling': `<svg viewBox="0 0 24 24"><circle cx="8" cy="16" r="2"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="16" cy="16" r="2"></circle><circle cx="10" cy="8" r="1"></circle><circle cx="14" cy="8" r="1"></circle></svg>`,
-                'Gate Opening': `<svg viewBox="0 0 24 24"><path d="M3 12h18M3 12l5-5m-5 5l5 5m13-5l-5-5m5 5l-5 5"></path></svg>`,
-                'Ritual Drum': `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M8 12h8"></path></svg>`,
-                'Sanity Loss': `<svg viewBox="0 0 24 24"><path d="M12 4l2 4l4 2l-4 2l-2 4l-2-4l-4-2l4-2z"></path><path d="M12 14c-3.33 1.33-6.67 1.33-10 0m20 0c-3.33 1.33-6.67 1.33-10 0"></path></svg>`,
-                'Claw Scratch': `<svg viewBox="0 0 24 24"><path d="M5 3c4 4 4 10 0 18m4-17c4 4 4 10 0 18m4-17c4 4 4 10 0 18"></path></svg>`,
-            };
-            
-            // This object maps the sound names to the actual file paths.
-            const soundFiles = {
-                'Deep Drone': 'sounds/deep_drone.mp3', 'Skittering': 'sounds/skittering.wav', 'Whispers': 'sounds/whispers.mp3', 'Heartbeat': 'sounds/heartbeat.mp3', 'Wet Plop': 'sounds/wet_plop.wav', 'Dissonant Chord': 'sounds/dissonant_chord.mp3', 'Ancient Bell': 'sounds/ancient_bell.wav', 'Grinding Stone': 'sounds/grinding_stone.mp3', 'Psychic Scream': 'sounds/psychic_scream.wav', 'Chant': 'sounds/chant.mp3', 'Monster Growl': 'sounds/monster_growl.wav', 'Tearing Fabric': 'sounds/tearing_fabric.mp3', 'Void Howl': 'sounds/void_howl.wav', 'Clock Toll': 'sounds/clock_toll.mp3', 'Ghostly Moan': 'sounds/ghostly_moan.wav', 'Bubbling': 'sounds/bubbling.mp3', 'Gate Opening': 'sounds/gate_opening.wav', 'Ritual Drum': 'sounds/ritual_drum.mp3', 'Sanity Loss': 'sounds/sanity_loss.wav', 'Claw Scratch': 'sounds/claw_scratch.mp3',
-            };
+            // --- GLOBAL AUDIO STATE ---
+            let currentAudio = null;
+            let currentPlayingButton = null;
+
+            // --- SOUND DATA ---
+            const sounds = [
+                { title: 'Dark Transaction', file: '1. Dark Transaction.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M4 12h16m-16 0l4-4m-4 4l4 4m12-4l-4-4m4 4l-4 4"></path><circle cx="12" cy="12" r="2" stroke-width="2"></circle></svg>` },
+                { title: 'Roaring Fire', file: '2. Roaring Fire.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2C12 2 4 10 4 14C4 18.4183 7.58172 22 12 22C16.4183 22 20 18.4183 20 14C20 10 12 2 12 2Z"></path><path d="M12 12c-2 0-4 2-4 4"></path></svg>` },
+                { title: 'Fists of Fury', file: '3. Fists of Fury.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M14.5 9.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-4z"></path><path d="M4 14.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4z"></path><path d="M15 14h-2l-3 3h-2l-3-3H3"></path></svg>` },
+                { title: 'Arcane Surge', file: '4. Arcane Surge.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>` },
+                { title: 'Glorious Triumph', file: '5. Glorious Triumph.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2l2.35 4.76L19 7.8l-4.5 4.38L15.69 19 12 16.58 8.31 19l1.19-6.82L5 7.8l4.65-1.04L12 2z"></path></svg>` },
+                { title: 'Cursed Fumble', file: '6. Cursed Fumble.mp3', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M9.5 9.5l5 5m0-5l-5 5"></path></svg>` },
+                { title: 'Quiet Entry', file: '7. Quiet Entry.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M10 22h4v-2.5c0-1-1-2-2-2s-2 1-2 2V22z"></path><path d="M6 20.5A4.5 4.5 0 0 1 10.5 16H12"></path><path d="M18 20.5a4.5 4.5 0 0 0-4.5-4.5H12"></path><path d="M12 16V4a2 2 0 0 1 2-2h1"></path></svg>` },
+                { title: 'Dread Impact', file: '8. Dread Impact.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M2 12h20M12 2v20"></path><path d="M4 4l16 16M4 20L20 4"></path></svg>` },
+                { title: 'Arcane Acquisition', file: '9. Arcane Acquisition.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2l-4 4h8l-4-4z"></path><path d="M12 22l-4-4h8l-4 4z"></path><path d="M2 12l4-4v8l-4-4z"></path><path d="M22 12l-4-4v8l4-4z"></path><circle cx="12" cy="12" r="2"></circle></svg>` },
+                { title: 'Opening Rift', file: '10. Opening Rift.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10S22 17.523 22 12 17.523 2 12 2z"></path><path d="M4.93 4.93l4.24 4.24"></path><path d="M14.83 14.83l4.24 4.24"></path></svg>` },
+                { title: 'The Reckoning', file: '11. The Reckoning.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M2 7h20M5 7l1 13h12l1-13"></path><path d="M12 2l-3 5h6l-3-5z"></path></svg>` },
+                { title: 'Mystery Deepens', file: '12. Mystery Deepens.mp3', icon: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path><path d="M11 8v4"></path><circle cx="11" cy="15" r="1"></circle></svg>` },
+                { title: 'Ritual Drum', file: '13. Ritual Drum.mp3', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M8 12h8"></path></svg>` },
+                { title: 'Forbidden Waters', file: '14. Forbidden Waters.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M3 12c4-4 8-4 12 0 4 4 8 4 12 0"></path><path d="M3 16c4 4 8 4 12 0 4-4 8-4 12 0"></path></svg>` },
+                { title: 'Shadowed Wilds', file: '15. Shadowed Wilds.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"></path><path d="M12 12L2 22"></path><path d="M12 12L22 22"></path></svg>` },
+                { title: 'Triumphant Ovation', file: '16. Triumphant Ovation.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M15 18s-2-2-4-2-4 2-4 2"></path><path d="M15 14s-2-2-4-2-4 2-4 2"></path><path d="M15 10s-2-2-4-2-4 2-4 2"></path></svg>` },
+                { title: 'Eldritch Void', file: '17. Eldritch Void.mp3', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>` },
+                { title: 'Cthonian Chant', file: '18. Cthonian Chant.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M8 12h8M8 16h8M8 8h8"></path><path d="M5 4v16"></path><path d="M19 4v16"></path></svg>` },
+                { title: 'Insatiable Growl', file: '19. Insatiable Growl.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M5 8l4 8h6l4-8H5z"></path><path d="M5 16l4-8h6l4 8H5z"></path></svg>` },
+                { title: 'Ancient Bell', file: '20. Ancient Bell.mp3', icon: `<svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0v-6a5 5 0 0 1 5-5z"></path><path d="M8 15h8"></path><path d="M12 15v2"></path></svg>` },
+            ];
             
             // Create items (button + title) and add them to the grid
-            Object.keys(soundIcons).forEach(name => {
+            sounds.forEach(sound => {
                 const itemContainer = document.createElement('div');
                 itemContainer.className = 'flex flex-col items-center justify-start';
 
                 const button = document.createElement('button');
                 button.className = 'sound-btn';
-                button.innerHTML = soundIcons[name];
-                button.dataset.soundName = name;
+                button.innerHTML = sound.icon;
+                button.dataset.soundFile = sound.file;
+                button.dataset.soundTitle = sound.title;
                 
                 const title = document.createElement('p');
                 title.className = 'sound-title';
-                title.textContent = name;
+                title.textContent = sound.title;
 
                 itemContainer.appendChild(button);
                 itemContainer.appendChild(title);
                 soundGrid.appendChild(itemContainer);
             });
 
+            // --- AUDIO PLAYBACK LOGIC ---
+            function playSound(button) {
+                const filePath = button.dataset.soundFile;
+                
+                // Stop any currently playing audio
+                stopSound();
+
+                // Create and play new audio
+                currentAudio = new Audio(filePath);
+                currentAudio.play().catch(error => console.error("Error playing sound:", error));
+                currentPlayingButton = button;
+                button.classList.add('playing');
+                soundNameDisplay.textContent = button.dataset.soundTitle.toUpperCase();
+
+                // Listen for when the audio finishes
+                currentAudio.addEventListener('ended', stopSound);
+            }
+
+            function stopSound() {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.removeEventListener('ended', stopSound);
+                    currentAudio = null;
+                }
+                if (currentPlayingButton) {
+                    currentPlayingButton.classList.remove('playing');
+                    currentPlayingButton = null;
+                }
+                soundNameDisplay.textContent = '\u00A0'; // Non-breaking space
+            }
+
             // Event listener for all buttons
             soundGrid.addEventListener('click', (e) => {
                 const button = e.target.closest('.sound-btn');
                 if (!button) return;
 
-                const soundName = button.dataset.soundName;
-                const filePath = soundFiles[soundName];
-                
-                soundNameDisplay.textContent = soundName.toUpperCase();
-
-                console.log(`Button pressed: ${soundName}. File path: ${filePath}`);
-                
-                // --- UNCOMMENT THIS CODE TO PLAY SOUNDS ---
-                /*
-                if (filePath) {
-                    const audio = new Audio(filePath);
-                    audio.play().catch(error => console.error("Error playing sound:", error));
+                // If the clicked button is already playing, stop it.
+                if (button === currentPlayingButton) {
+                    stopSound();
+                } else {
+                    // Otherwise, play the new sound.
+                    playSound(button);
                 }
-                */
-
-                // Visual feedback
-                button.classList.add('playing');
-                setTimeout(() => {
-                    button.classList.remove('playing');
-                }, 500);
             });
         });
     </script>
