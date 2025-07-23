@@ -33,17 +33,18 @@
         .peeking-eye {
             position: absolute;
             opacity: 0;
-            animation: fadeInOut 8s ease-in-out infinite;
+            animation: fadeInOut 10s ease-in-out infinite;
         }
 
         .peeking-eye svg {
-            width: 80px;
+            width: 60px; /* Made eyes smaller */
             height: auto;
-            filter: drop-shadow(0 0 10px #a855f7a0);
+            filter: drop-shadow(0 0 10px #a855f7a0); /* Color back to purple */
         }
 
-        .eye-pupil {
-            animation: blink 5s ease-in-out infinite;
+        .eye-lid {
+            transform-origin: center center;
+            animation: slowBlink 6s ease-in-out infinite;
         }
 
         @keyframes fadeInOut {
@@ -51,9 +52,13 @@
             20%, 80% { opacity: 0.7; }
         }
 
-        @keyframes blink {
-            0%, 45%, 55%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(0.1); }
+        @keyframes slowBlink {
+            0%, 40%, 100% {
+                transform: scaleY(0); /* Eyelid is open */
+            }
+            50% {
+                transform: scaleY(1.1); /* Eyelid is closed (slight overshoot) */
+            }
         }
 
         /* Main app container sits above the art */
@@ -276,9 +281,10 @@
             // --- BLINKING EYES LOGIC ---
             const eyesContainer = document.getElementById('eyes-container');
             const eyeSvg = `
-                <svg viewBox="0 0 100 50">
-                    <path d="M 0 25 C 20 0, 80 0, 100 25 C 80 50, 20 50, 0 25" fill="#1a1625" stroke="#3a324f" stroke-width="2"></path>
-                    <path class="eye-pupil" d="M 50 15 C 40 15, 40 35, 50 35 C 60 35, 60 15, 50 15" fill="#c59fff"></path>
+                <svg viewBox="0 0 100 100">
+                    <path d="M 10 50 C 10 20, 90 20, 90 50 C 90 80, 10 80, 10 50" fill="#1a1625" stroke="#3a324f" stroke-width="2"></path>
+                    <circle cx="50" cy="50" r="15" fill="#c59fff"></circle>
+                    <path class="eye-lid" d="M 10 50 C 10 20, 90 20, 90 50" fill="#05040a"></path>
                 </svg>
             `;
 
@@ -292,11 +298,11 @@
                 eye.style.left = `${Math.random() * 80 + 10}%`;
 
                 // Randomize animation delays and durations for variety
-                const randomFadeDuration = Math.random() * 4 + 6; // 6-10s
-                const randomBlinkDuration = Math.random() * 3 + 4; // 4-7s
+                const randomFadeDuration = Math.random() * 4 + 8; // 8-12s
+                const randomBlinkDuration = Math.random() * 3 + 5; // 5-8s
                 eye.style.animationDuration = `${randomFadeDuration}s`;
-                eye.querySelector('.eye-pupil').style.animationDuration = `${randomBlinkDuration}s`;
-                eye.querySelector('.eye-pupil').style.animationDelay = `${Math.random() * randomBlinkDuration}s`;
+                eye.querySelector('.eye-lid').style.animationDuration = `${randomBlinkDuration}s`;
+                eye.querySelector('.eye-lid').style.animationDelay = `${Math.random() * randomBlinkDuration}s`;
 
                 eyesContainer.appendChild(eye);
 
@@ -306,8 +312,8 @@
                 }, randomFadeDuration * 1000);
             }
 
-            // Spawn a new eye every so often
-            setInterval(createEye, 2000);
+            // Spawn a new eye more frequently
+            setInterval(createEye, 800);
         });
     </script>
 </body>
